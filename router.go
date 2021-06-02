@@ -261,7 +261,7 @@ func (p *ControllerRegister) Include(cList ...ControllerInterface) {
 			t := reflect.Indirect(reflectVal).Type()
 			// for go modules
 			if go111module == `on` {
-				pkgpath := filepath.Join(WorkPath, "..", t.PkgPath())
+				pkgpath := filepath.Join(WorkPath, "controllers")
 				if utils.FileExists(pkgpath) {
 					if pkgpath != "" {
 						if _, ok := skip[pkgpath]; !ok {
