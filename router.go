@@ -256,6 +256,7 @@ func (p *ControllerRegister) Include(cList ...ControllerInterface) {
 		skip := make(map[string]bool, 10)
 		wgopath := utils.GetGOPATHs()
 		go111module := os.Getenv(`GO111MODULE`)
+		logs.Info(fmt.Sprintf("GET GOPATH %s GO111MODULE %s",wgopath,go111module))
 		for _, c := range cList {
 			reflectVal := reflect.ValueOf(c)
 			t := reflect.Indirect(reflectVal).Type()
@@ -266,10 +267,14 @@ func (p *ControllerRegister) Include(cList ...ControllerInterface) {
 					if pkgpath != "" {
 						if _, ok := skip[pkgpath]; !ok {
 							skip[pkgpath] = true
-							parserPkg(pkgpath, t.PkgPath())
+							err := parserPkg(pkgpath, t.PkgPath())
+							if err != nil {
+								logs.Error("parserPkg error ",err)
+							}
 						}
 					}
 				}
+				logs.Info(fmt.Sprintf("GET controllers path %s",pkgpath))
 			} else {
 				if len(wgopath) == 0 {
 					panic("you are in dev mode. So please set gopath")
