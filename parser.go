@@ -511,7 +511,7 @@ func genRouterCode(pkgRealpath string) {
 		}
 	}
 
-	if globalinfo != "" {x
+	if globalinfo != "" {
 		f, err := os.Create(filepath.Join(getRouterDir(pkgRealpath), commentFilename))
 		if err != nil {
 			panic(err)
