@@ -252,19 +252,16 @@ func (p *ControllerRegister) addToRouter(method, pattern string, r *ControllerIn
 // Include only when the Runmode is dev will generate router file in the router/auto.go from the controller
 // Include(&BankAccount{}, &OrderController{},&RefundController{},&ReceiptController{})
 func (p *ControllerRegister) Include(cList ...ControllerInterface) {
-	logs.Info("include--------------------")
-	fmt.Println("include--------------------")
 	if BConfig.RunMode == DEV {
 		skip := make(map[string]bool, 10)
 		wgopath := utils.GetGOPATHs()
 		go111module := os.Getenv(`GO111MODULE`)
-		logs.Info(fmt.Sprintf("GET GOPATH %s GO111MODULE %s",wgopath,go111module))
 		for _, c := range cList {
 			reflectVal := reflect.ValueOf(c)
 			t := reflect.Indirect(reflectVal).Type()
 			// for go modules
 			if go111module == `on` {
-				pkgpath := filepath.Join(WorkPath, "controllers")
+				pkgpath := filepath.Join(WorkPath, t.PkgPath()[strings.Index(t.PkgPath(),"controllers"):])
 				if utils.FileExists(pkgpath) {
 					if pkgpath != "" {
 						if _, ok := skip[pkgpath]; !ok {
@@ -276,7 +273,6 @@ func (p *ControllerRegister) Include(cList ...ControllerInterface) {
 						}
 					}
 				}
-				logs.Info(fmt.Sprintf("GET controllers path %s",pkgpath))
 			} else {
 				if len(wgopath) == 0 {
 					panic("you are in dev mode. So please set gopath")
@@ -302,7 +298,7 @@ func (p *ControllerRegister) Include(cList ...ControllerInterface) {
 		reflectVal := reflect.ValueOf(c)
 		t := reflect.Indirect(reflectVal).Type()
 		key := t.PkgPath() + ":" + t.Name()
-		if comm, ok := GlobalControllerRouter[key]; ok {
+		if comm, ok := genInfoList[key]; ok {
 			for _, a := range comm {
 				for _, f := range a.Filters {
 					p.InsertFilter(f.Pattern, f.Pos, f.Filter, f.ReturnOnOutput, f.ResetParams)
