@@ -78,8 +78,10 @@ func init() {
 
 func parserPkg(pkgRealpath, pkgpath string) error {
 	rep := strings.NewReplacer("\\", "_", "/", "_", ".", "_")
+	logs.Info("get APPPATH %s",AppPath)
 	commentFilename, _ = filepath.Rel(AppPath, pkgRealpath)
 	commentFilename = commentPrefix + rep.Replace(commentFilename) + ".go"
+	logs.Info("get commentFilename %s",commentFilename)
 	if !compareFile(pkgRealpath) {
 		logs.Info(pkgRealpath + " no changed")
 		return nil
